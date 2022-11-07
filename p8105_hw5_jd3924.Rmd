@@ -7,9 +7,16 @@ output: github_document
 
 ```{r}
 library(tidyverse)
-library(rvest)
 ```
 
 ```{r}
-
+sim_func = function(
+    n = 30, 
+    mu = 0,
+    sigma = 5) {
+  x = rnorm(n, mean = mu, sd = sigma)
+  t_test = t.test(x, conf.int = 0.95) %>% broom:tidy()
+  
+  t_test
+}
 ```
