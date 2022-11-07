@@ -10,13 +10,18 @@ library(tidyverse)
 ```
 
 ```{r}
-sim_func = function(
+sim_funct = function(
     n = 30, 
     mu = 0,
     sigma = 5) {
   x = rnorm(n, mean = mu, sd = sigma)
-  t_test = t.test(x, conf.int = 0.95) %>% broom:tidy()
+  t_test = t.test(x, conf.int = 0.95) %>% broom::tidy()
   
   t_test
 }
+output = vector("list",100)
+for (i in 1: 100) {
+  output[[i]] = sim_funct()
+}
+output %>% bind_rows() %>% head()
 ```
