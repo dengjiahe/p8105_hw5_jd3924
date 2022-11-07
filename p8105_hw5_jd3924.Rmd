@@ -8,6 +8,12 @@ output: github_document
 ```{r}
 library(tidyverse)
 ```
+```{r}
+data_path = 'data'
+file_list = list.files(data_path) %>%
+  view()
+
+```
 
 ```{r}
 sim_funct = function(
