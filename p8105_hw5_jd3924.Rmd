@@ -25,8 +25,8 @@ sim_funct = function(
   
   t_test
 }
-output = vector("list",100)
-for (i in 1: 100) {
+output = vector("list",5000)
+for (i in 1: 5000) {
   output[[i]] = sim_funct()
 }
 output %>% bind_rows() %>% head()
