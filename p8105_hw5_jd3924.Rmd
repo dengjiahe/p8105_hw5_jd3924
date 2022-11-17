@@ -50,6 +50,32 @@ prop.test(
   ) %>%
   broom::tidy()
 ```
+```{r}
+prop_test = function(city){
+  
+  city_summary = 
+    city %>% 
+      summarise(
+        unsolved = sum(resolution == 'unsolved'),
+        n = n()
+      )
+  
+  city_test = 
+    prop.test(
+      x = city_summary %>% pull(unsolved),
+      n = city_summary %>% pull(n)
+    )
+  
+  city_test
+}
+```
+```{r} 
+#use Baltimore to test whether the function works propertly
+prop_test(baltimore_data)
+```
+
+
+
 
 ```{r}
 #Conduct a hypothesis T test for n = 30, sigma = 5
