@@ -33,8 +33,23 @@ homicides_data %>%
     number_of_unsolved = sum(resolution == "unsolved"),
     number_of_homicides = n())
 ```
+```{r}
+baltimore_data = 
+  homicides_data %>%
+  filter(city_state == "Baltimore,MD")
 
+baltimore_summary = 
+  baltimore_data %>%
+  summarise(
+    unsolved_md = sum(resolution == "unsolved"),
+    num = n())
 
+prop.test(
+  x = baltimore_summary %>% pull(unsolved_md),
+  n = baltimore_summary %>% pull(num)
+  ) %>%
+  broom::tidy()
+```
 
 ```{r}
 #Conduct a hypothesis T test for n = 30, sigma = 5
