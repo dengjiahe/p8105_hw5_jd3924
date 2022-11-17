@@ -14,23 +14,22 @@ urlfile = "https://raw.githubusercontent.com/washingtonpost/data-homicides/maste
 homicides_data = read_csv(url(urlfile), na = c(" ", "Unknown"))
 ```
 In this data, there is 52179 observations and 12 variables.
-This data include each case's detailed information, such as victim's name age and race,location, and the progress of the case.
+This data include each case's detailed information, such as victim's name(victim_first,victim_race), age(victim_age),gender(victim_sex), race(victim_race),location(city, state, lat, lon), the progress of the case(disposition), case's reported data(reported_date).
 ```{r}
 homicides_data = 
   homicides_data %>%
   mutate(
     city_state = str_c(city,state, sep = ","),
-    resolution = case_when(
-      disposition == 'Closed without arrest' ~ 'unsolved',
-      disposition == 'Open/No arrest' ~ 'unsolved',
-      disposition == 'Closed by arrest' ~ 'solved'
-         )) %>% relocate(city_state)
+    case_status = ifelse(disposition %in% c("Closed without arrest","Open/No arrest"), "unsolved","solved")
+         ) %>% relocate(city_state) %>% 
+  filter(city_state != "Tulsa,AL")
+homicides_data
 ```
 ```{r}
 homicides_data %>%
   group_by(city_state) %>%
   summarize(
-    number_of_unsolved = sum(resolution == "unsolved"),
+    number_of_unsolved = sum(case_status=="unsolved"),
     number_of_homicides = n())
 ```
 ```{r}
@@ -41,7 +40,7 @@ baltimore_data =
 baltimore_summary = 
   baltimore_data %>%
   summarise(
-    unsolved_md = sum(resolution == "unsolved"),
+    unsolved_md = sum(case_status == "unsolved"),
     num = n())
 
 prop.test(
@@ -56,7 +55,7 @@ prop_test = function(city){
   city_summary = 
     city %>% 
       summarise(
-        unsolved = sum(resolution == 'unsolved'),
+        unsolved = sum(case_status == 'unsolved'),
         n = n()
       )
   
@@ -70,7 +69,7 @@ prop_test = function(city){
 }
 ```
 ```{r} 
-#use Baltimore to test whether the function works propertly
+#use Baltimore to test whether the function works
 prop_test(baltimore_data)
 ```
 
@@ -87,7 +86,19 @@ statistic_df =
   select(city_state, estimate, starts_with("conf"))
 statistic_df
 ```
-
+```{r}
+statistic_df %>%
+  mutate(city_state = fct_reorder(city_state, estimate,.desc = TRUE)) %>%
+  ggplot(aes(x = city_state, y = estimate)) +
+  geom_point() +
+  geom_errorbar(aes(ymin = conf.low, ymax = conf.high)) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
+  labs(
+    title = "proportion of unsolved homicides",
+    x = "location: city,state",
+    y = "estimated proportion of unsolved homicides",
+    caption = "Data from the Washington Post")
+```
 
 
 
