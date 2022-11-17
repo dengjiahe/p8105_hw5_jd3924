@@ -74,6 +74,20 @@ prop_test = function(city){
 prop_test(baltimore_data)
 ```
 
+```{r}
+statistic_df =
+  homicides_data %>%
+  nest(-city_state) %>%
+  mutate(
+    result = map(data, prop_test),
+    tidy_data = map(result, broom::tidy)
+  ) %>%
+  select(city_state, tidy_data) %>%
+  unnest(tidy_data) %>%
+  select(city_state, estimate, starts_with("conf"))
+statistic_df
+```
+
 
 
 
