@@ -13,6 +13,18 @@ library(tidyverse)
 urlfile = "https://raw.githubusercontent.com/washingtonpost/data-homicides/master/homicide-data.csv"
 homicides_data = read_csv(url(urlfile), na = c(" ", "Unknown"))
 ```
+In this data, there is 52179 observations and 12 variables.
+This data include each case's detailed information, such as victim's name age and race,location, and the progress of the case.
+```{r}
+homicides_data %>%
+  mutate(
+    city_state = str_c(city,state, sep = ","),
+    resolution = case_when(
+      disposition == 'Closed without arrest' ~ 'unsolved',
+      disposition == 'Open/No arrest' ~ 'unsolved',
+      disposition == 'Closed by arrest' ~ 'solved'
+         )) %>% relocate(city_state)
+```
 
 ```{r}
 #Conduct a hypothesis T test for n = 30, sigma = 5
